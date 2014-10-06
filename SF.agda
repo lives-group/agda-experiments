@@ -539,7 +539,7 @@ module Lists where
   nonZeros (zero , xs) = nonZeros xs
   nonZeros (x , xs)    = x , nonZeros xs
 
-  testNonZeros : nonZeros ( 0 , 1 , 0 , 2 , 0 , nil) ≡ (1 , 2 , nil) -- chamar a funcao
+  testNonZeros : nonZeros ( 0 , 1 , 0 , 2 , 0 , nil) ≡ (1 , 2 , nil)
   testNonZeros = refl
  
   ------------------------------------------------------------------------------------------------------
@@ -599,7 +599,7 @@ module Lists where
   sum nil = zero
   sum (x , xs) = x + (sum xs)
   
-  testSum : sum (1 , 2 , 1 , nil) ≡ 4 -- teste errado
+  testSum : sum (1 , 2 , 1 , nil) ≡ 4
   testSum = refl
 
   add : ℕ → Bag → Bag
@@ -632,7 +632,7 @@ module Lists where
   testRemoveOne1 : count 1 (removeOne 1 (1 , 2 , 1 , nil)) ≡ 1 
   testRemoveOne1 = refl
 
-  testRemoveOne2 : count 1 (removeOne 2 (1 , 2 , 1 , nil)) ≡ 2 -- teste que tambem esta errado
+  testRemoveOne2 : count 1 (removeOne 2 (1 , 2 , 1 , nil)) ≡ 2 
   testRemoveOne2 = refl
 
   removeAll : ℕ → Bag → Bag
@@ -692,9 +692,9 @@ module Lists where
   appLength : ∀ (n m : NList) → length (n ++ m) ≡ length n + length m
   appLength nil      m = refl
   appLength (x , xs) m =                                                 --cong suc (appLength xs m)
-    length ((x , xs) ++ m) ≡⟨ refl ⟩ 
-    length (x , (xs ++ m)) ≡⟨ refl ⟩
-    suc (length (xs ++ m)) ≡⟨ cong suc (appLength xs m) ⟩
+    length ((x , xs) ++ m)     ≡⟨ refl ⟩ 
+    length (x , (xs ++ m))     ≡⟨ refl ⟩
+    suc (length (xs ++ m))     ≡⟨ cong suc (appLength xs m) ⟩
     suc (length xs + length m) ≡⟨ refl ⟩ 
     length (x , xs) + length m
     ∎ 
@@ -748,7 +748,7 @@ module Lists where
     (x , ((l1 ++ l2) ++ l3) ++ l4)
     ∎
 
-  snocApp : ∀ (n : ℕ)(l : NList) → snoc n l ≡ l ++ (n , nil) -- arrumar no pdf
+  snocApp : ∀ (n : ℕ)(l : NList) → snoc n l ≡ l ++ (n , nil) 
   snocApp n nil     = refl
   snocApp n (x , l) = 
     snoc n (x , l)     ≡⟨ refl ⟩ 
@@ -878,7 +878,7 @@ module Polymorphism where
 
   -- 4.1.5  Exercices: Polymorphic List
 
-  repeat : {A : Set}(n : A)(count : ℕ) → List A -- arrumar na apostila
+  repeat : {A : Set}(n : A)(count : ℕ) → List A
   repeat {A} _ zero        = nil
   repeat {A} n (suc count) = n , (repeat {A} n count)
 
@@ -1026,7 +1026,7 @@ module Polymorphism where
     
   -- Exercise 4.2
 
-  uncurryCurry : ∀ {A B C : Set}(f : A X B → C)(p : A X B) → curry (uncurry f) p ≡ f p -- Modificar no PDF
+  uncurryCurry : ∀ {A B C : Set}(f : A X B → C)(p : A X B) → curry (uncurry f) p ≡ f p 
   uncurryCurry f p = {!!}
 
   curryUncurry : ∀ {A B C : Set}(f : A → B → C)(x : A)(y : B) → uncurry (curry f) x y ≡ f x y
@@ -1040,7 +1040,7 @@ module Polymorphism where
   filter p (x , xs) | True  = x , filter p xs
   filter p (x , xs) | False = filter p xs
 
-  testFilterEven : filter evenb (1 , (2 , (3 , (0 , nil)))) ≡ (2 , (0 , nil)) -- Perguntar o Rodrigo
+  testFilterEven : filter evenb (1 , (2 , (0 , (3 , nil)))) ≡ (2 , (0 , nil))
   testFilterEven = refl
   
   countOddMembers : List ℕ → ℕ
@@ -1129,7 +1129,7 @@ module Polymorphism where
   fold f v nil = v
   fold f v (x , xs) = f x (fold f v xs)
 
-  testFold : fold _+_ 0 (1 , (2 , (3 , (4 , nil)))) ≡ 10 -- Arrumar no PDF
+  testFold : fold _+_ 0 (1 , (2 , (3 , (4 , nil)))) ≡ 10
   testFold = refl
 
   -- 4.2.8  Functions for Constructing Fuctions
