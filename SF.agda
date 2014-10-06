@@ -2,7 +2,7 @@
 
 open import Agda.Primitive
 
--- Não existe na apostila
+-- Existe na apostila, por'em esta mais para frente
 --> Inicio
   
 infix 4 _≡_
