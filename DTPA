@@ -8,9 +8,13 @@ not : Bool → Bool
 not true  = false
 not false = true
 
+
+
 data Nat : Set where
   zero : Nat
   suc  : Nat → Nat
+
+{-# BUILTIN NATURAL Nat #-}
 
 _+_ : Nat → Nat → Nat
 zero    + m = m
@@ -146,6 +150,8 @@ isTrue : Bool -> Set
 isTrue true  = True
 isTrue false = False
 
+isFalse : Bool -> Set
+isFalse b = isTrue (not b)
 
 _<_ : Nat -> Nat -> Bool
 _       < zero    = false
@@ -316,7 +322,9 @@ record Monad (M : Set -> Set) : Set1 where
 
   mapM : {A B : Set} -> (A -> M B) -> List A -> M (List B)
   mapM f [] = return []
-  mapM f (x :: xs) = f x >>= \y -> mapM f xs >>= \ys ->  return (y :: ys) 
+  mapM f (x :: xs) = f x >>= \y ->
+                     mapM f xs >>= \ys -> 
+                     return (y :: ys) 
 
 mapM₁ : {M : Set -> Set} -> Monad M -> {A B : Set} -> (A -> M B) -> List A -> M (List B)
 mapM₁ Mon f xs = Monad.mapM Mon f xs
@@ -338,27 +346,31 @@ vec {suc n} x = x :: vec {n} x
 -- b)
 
 infixl 90 _$_
+
 _$_ : {n : Nat}{A B : Set} -> Vec (A -> B) n -> Vec A n -> Vec B n
-_$_ {zero}  []        [] = []
-_$_ {suc n} (f :: fs) (x :: xs) = f x :: (_$_ {n} fs xs) 
+[]        $ []        = []
+(f :: fs) $ (x :: xs) = f x :: (fs $ xs) 
 
 -- c) Nao sei como fazer
 
 transpose : forall {A n m} -> Matrix A n m -> Matrix A m n
-transpose xss = {!!} 
+transpose []            = vec []
+transpose (xss :: xss₁) = (vec _::_ $ xss) $ transpose xss₁
+--transpose xss = vec ((vec _::_) $) $ xss
 
 -- 2.2 Vector lookup
 
--- a) Nao funciona nao sei porque...
+-- a)
 
---lem-!-tab : forall {A n} (f : Fin n -> A) (i : Fin n) -> (tabulate f) ! i == f i
---lem-!-tab f i = ?
+lem-!-tab : forall {A n} (f : Fin n -> A) (i : Fin n) -> ((tabulate f) ! i) == f i
+lem-!-tab f fzero    = refl
+lem-!-tab f (fsuc i) = lem-!-tab (λ x -> f (fsuc x)) i
 
 -- b) 
 
-lem-tab-! : forall {A n} (xs : Vec A n) -> tabulate (_!_ xs) == xs
-lem-tab-! []        = refl
-lem-tab-! (x :: xs) = {!!}
+--lem-tab-! : forall {A n} (xs : Vec A n) -> tabulate (_!_ xs) == xs
+--lem-tab-! []        = refl
+--lem-tab-! (x :: xs) = {!!}
 
 -- 2.3 Sublists
 
@@ -369,9 +381,10 @@ C=-refl {xs = []}      = stop
 C=-refl {xs = x :: xs} = keep C=-refl
 
 C=-trans : {A : Set}{xs ys zs : List A} -> xs C= ys -> ys C= zs -> xs C= zs
-C=-trans stop     q = q
-C=-trans (drop p) q = C=-trans p (C=-trans (drop C=-refl) q)
-C=-trans (keep p) q = C=-trans (keep p) q
+C=-trans stop     stop     = stop
+C=-trans p        (drop q) = drop (C=-trans p q)
+C=-trans (drop p) (keep q) = drop (C=-trans p q)
+C=-trans (keep p) (keep q) = keep (C=-trans p q)
 
 infixr 30 _∷_
 data SubList {A : Set} : List A -> Set where
@@ -406,9 +419,11 @@ filter₁ p (x :: xs) with p x
 complement : {A : Set}{xs : List A} -> SubList xs -> SubList xs
 complement []        = []
 complement (x ∷ zs)  = skip (complement zs)
-complement (skip zs) = {!.x ∷ complement .xs!}
+complement {xs = x :: xs}(skip zs) = x ∷ complement zs
 
 -- f) WHAT!?!
 
-sublists : {A : Set}(xs : List A) -> List (SubList xs)
-sublists xs = (filter₁ (λ _ -> true) xs) :: []
+--sublists : {A : Set}(xs : List A) -> List (SubList xs)
+--sublists []        = []
+--sublists (x :: xs) = {!!}
+  
